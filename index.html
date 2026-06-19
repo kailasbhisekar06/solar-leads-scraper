@@ -14,12 +14,20 @@
             backdrop-filter: blur(16px);
             border: 1px solid rgba(255, 255, 255, 0.1);
         }
+        #globe-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+        }
     </style>
 </head>
 <body class="bg-slate-950 text-slate-100 font-sans antialiased overflow-x-hidden">
 
-    <section class="relative min-h-screen flex flex-col items-center justify-center pt-20 pb-32" 
-             style="background-image: linear-gradient(rgba(15, 23, 42, 0.7), rgba(15, 23, 42, 0.95)), url('https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=2072&auto=format&fit=crop'); background-size: cover; background-position: center; background-attachment: fixed;">
+    <section class="relative min-h-screen flex flex-col items-center justify-center pt-20 pb-32">
+        <div id="globe-container"></div>
         
         <div class="relative max-w-5xl mx-auto px-6 text-center z-10 mb-16">
             <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-emerald-500/20 border border-emerald-500/30 text-emerald-400 text-sm font-bold mb-8 shadow-[0_0_15px_rgba(16,185,129,0.3)]">
@@ -231,6 +239,44 @@
         </div>
         &copy; 2026 KB Global. All Rights Reserved.
     </footer>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script>
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer({ antialias: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        document.getElementById('globe-container').appendChild(renderer.domElement);
+
+        // Create Globe
+        const geometry = new THREE.SphereGeometry(2, 64, 64);
+        const textureLoader = new THREE.TextureLoader();
+        const texture = textureLoader.load('https://unpkg.com/three-globe/example/img/earth-night.jpg'); // Adjust texture URL if needed
+        const material = new THREE.MeshBasicMaterial({ map: texture });
+        const globe = new THREE.Mesh(geometry, material);
+        scene.add(globe);
+
+        camera.position.z = 5;
+
+        // Create network lines
+        // This part requires more complex Three.js setup to draw lines between points on the globe.
+        // For now, we can add a rotation animation to the globe.
+
+        function animate() {
+            requestAnimationFrame(animate);
+            globe.rotation.y += 0.005;
+            renderer.render(scene, camera);
+        }
+        animate();
+
+        // Handle window resize
+        window.addEventListener('resize', onWindowResize, false);
+        function onWindowResize() {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        }
+    </script>
 
 </body>
 </html>
