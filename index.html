@@ -237,6 +237,58 @@
                     SUBMIT & GENERATE SAMPLE
                 </button>
             </form>
+            <script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const form = document.querySelector("form") || document.getElementById("kb-lead-form");
+        if (!form) return;
+
+        form.addEventListener("submit", function (e) {
+            e.preventDefault();
+
+            const btn = form.querySelector('button[type="submit"]');
+            if (btn) {
+                btn.innerText = "SENDING...";
+                btn.disabled = true;
+            }
+
+            const formData = {
+                name: document.getElementById("form-name") ? document.getElementById("form-name").value : "",
+                email: document.getElementById("form-email") ? document.getElementById("form-email").value : "",
+                industry: document.getElementById("form-industry") ? document.getElementById("form-industry").value : "",
+                target_location: document.querySelector('input[name="target_location"]') ? document.querySelector('input[name="target_location"]').value : ""
+            };
+
+            fetch("https://n8n.thekbglobal.com/webhook-test/kb-global-leads", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(formData)
+            })
+            .then(response => {
+                if (response.ok) {
+                    if (btn) {
+                        btn.innerText = "SUCCESS! CHECK INBOX";
+                        btn.style.backgroundColor = "#22c55e";
+                    }
+                    form.reset();
+                } else {
+                    if (btn) {
+                        btn.innerText = "ERROR! TRY AGAIN";
+                        btn.style.backgroundColor = "#ef4444";
+                        btn.disabled = false;
+                    }
+                }
+            })
+            .catch(error => {
+                console.error("Error:", error);
+                if (btn) {
+                    btn.innerText = "ERROR! TRY AGAIN";
+                    btn.style.backgroundColor = "#ef4444";
+                    btn.disabled = false;
+                }
+            });
+        });
+    });
+</script>
         </div>
     </section>
 
