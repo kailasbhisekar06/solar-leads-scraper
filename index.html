@@ -180,7 +180,6 @@
 
             const formData = new FormData(this);
             
-            // n8n की लाइव 'body' के लिए डेटा का सही स्ट्रक्चर बनाया भाई
             const rawData = {
                 name: formData.get('name'),
                 email: formData.get('email'),
@@ -189,9 +188,10 @@
             };
 
             try {
-                // आख़िरी लाइव प्रोडक्शन यूआरएल लिंक
+                // आख़िरी लाइव प्रोडक्शन यूआरएल लिंक CORS फ़िक्स के साथ
                 const response = await fetch('https://n8n.thekbglobal.com/webhook/kb-global-website-leads', {
                     method: 'POST',
+                    mode: 'cors', // 🎯 ब्राउज़र का ब्लॉक हटाने के लिए यह लाइन जोड़ दी है
                     headers: {
                         'Content-Type': 'application/json'
                     },
