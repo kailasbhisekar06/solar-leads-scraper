@@ -344,5 +344,44 @@
             renderer.setSize(window.innerWidth, window.innerHeight);
         });
     </script>
+    <script>
+                document.getElementById('kb-lead-form').addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    
+                    const btn = document.getElementById('submit-btn');
+                    btn.innerText = 'SENDING...';
+                    btn.disabled = true;
+
+                    const formData = {
+                        name: document.getElementById('form-name').value,
+                        email: document.getElementById('form-email').value,
+                        industry: document.getElementById('form-industry').value,
+                        target_location: document.getElementById('form-location').value
+                    };
+
+                    fetch('यहाँ_नया_लिंक_पेस्ट_करें', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(formData)
+                    })
+                    .then(response => {
+                        if(response.ok) {
+                            btn.innerText = 'SUCCESS! CHECK INBOX';
+                            btn.style.backgroundColor = '#22c55e';
+                            document.getElementById('kb-lead-form').reset();
+                        } else {
+                            btn.innerText = 'ERROR! TRY AGAIN';
+                            btn.style.backgroundColor = '#ef4444';
+                            btn.disabled = false;
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        btn.innerText = 'ERROR! TRY AGAIN';
+                        btn.style.backgroundColor = '#ef4444';
+                        btn.disabled = false;
+                    });
+                });
+            </script>
 </body>
 </html>
