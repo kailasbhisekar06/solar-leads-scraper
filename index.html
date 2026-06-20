@@ -210,22 +210,23 @@
                 <h2 class="text-4xl font-extrabold mb-4 text-white">Claim Your 10 Free Leads</h2>
                 <p class="text-slate-400 text-lg">Enter your business details below. Our automation agent will deliver your custom sample straight to your inbox.</p>
             </div>
-            <form id="kb-lead-form" class="glass-card p-8 md:p-10 rounded-3xl space-y-6 shadow-2xl border border-slate-700">
+            
+            <form id="my-lead-form" class="glass-card p-8 md:p-10 rounded-3xl space-y-6 shadow-2xl border border-slate-700">
                 <div>
                     <label class="block text-xs font-bold uppercase tracking-widest text-emerald-400 mb-2">Full Name</label>
-                    <input type="text" id="form-name" required class="w-full bg-slate-950 border border-slate-800 rounded-xl px-5 py-4 text-slate-100 focus:outline-none focus:border-emerald-500 transition-colors">
+                    <input type="text" name="name" required class="w-full bg-slate-950 border border-slate-800 rounded-xl px-5 py-4 text-slate-100 focus:outline-none focus:border-emerald-500 transition-colors">
                 </div>
                 <div>
                     <label class="block text-xs font-bold uppercase tracking-widest text-emerald-400 mb-2">Business Email</label>
-                   <input type="email" id="form-email" required class="w-full bg-slate-950 border border-slate-800 rounded-xl px-5 py-4 text-slate-100 focus:outline-none focus:border-emerald-500 transition-colors">
+                    <input type="email" name="email" required class="w-full bg-slate-950 border border-slate-800 rounded-xl px-5 py-4 text-slate-100 focus:outline-none focus:border-emerald-500 transition-colors">
                 </div>
                 <div>
                     <label class="block text-xs font-bold uppercase tracking-widest text-emerald-400 mb-2">Your Industry</label>
-                    <select id="form-industry" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-5 py-4 text-slate-100 focus:outline-none focus:border-emerald-500 transition-colors appearance-none">
-                        <option value="solar">Solar Energy Providers</option>
-                        <option value="realestate">Real Estate Brokers</option>
-                        <option value="saas">B2B / SaaS Software</option>
-                        <option value="other">Other High-Ticket Business</option>
+                    <select name="industry" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-5 py-4 text-slate-100 focus:outline-none focus:border-emerald-500 transition-colors appearance-none">
+                        <option value="Solar Energy Providers">Solar Energy Providers</option>
+                        <option value="Real Estate Brokers">Real Estate Brokers</option>
+                        <option value="B2B / SaaS Software">B2B / SaaS Software</option>
+                        <option value="Other High-Ticket Business">Other High-Ticket Business</option>
                     </select>
                 </div>
                 <div>
@@ -233,62 +234,10 @@
                     <input type="text" name="target_location" placeholder="e.g. USA, UK, UAE" required class="w-full bg-slate-950 border border-slate-800 rounded-xl px-5 py-4 text-slate-100 focus:outline-none focus:border-emerald-500 transition-colors">
                 </div>
                 
-                <button type="submit" class="w-full bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-extrabold text-lg py-5 rounded-xl transition-all neon-glow mt-6">
+                <button type="submit" id="submit-btn" class="w-full bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-extrabold text-lg py-5 rounded-xl transition-all neon-glow mt-6">
                     SUBMIT & GENERATE SAMPLE
                 </button>
             </form>
-            <script>
-    document.addEventListener("DOMContentLoaded", function () {
-        const form = document.querySelector("form") || document.getElementById("kb-lead-form");
-        if (!form) return;
-
-        form.addEventListener("submit", function (e) {
-            e.preventDefault();
-
-            const btn = form.querySelector('button[type="submit"]');
-            if (btn) {
-                btn.innerText = "SENDING...";
-                btn.disabled = true;
-            }
-
-            const formData = {
-                name: document.getElementById("form-name") ? document.getElementById("form-name").value : "",
-                email: document.getElementById("form-email") ? document.getElementById("form-email").value : "",
-                industry: document.getElementById("form-industry") ? document.getElementById("form-industry").value : "",
-                target_location: document.querySelector('input[name="target_location"]') ? document.querySelector('input[name="target_location"]').value : ""
-            };
-
-            fetch("https://n8n.thekbglobal.com/webhook-test/kb-global-leads", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(formData)
-            })
-            .then(response => {
-                if (response.ok) {
-                    if (btn) {
-                        btn.innerText = "SUCCESS! CHECK INBOX";
-                        btn.style.backgroundColor = "#22c55e";
-                    }
-                    form.reset();
-                } else {
-                    if (btn) {
-                        btn.innerText = "ERROR! TRY AGAIN";
-                        btn.style.backgroundColor = "#ef4444";
-                        btn.disabled = false;
-                    }
-                }
-            })
-            .catch(error => {
-                console.error("Error:", error);
-                if (btn) {
-                    btn.innerText = "ERROR! TRY AGAIN";
-                    btn.style.backgroundColor = "#ef4444";
-                    btn.disabled = false;
-                }
-            });
-        });
-    });
-</script>
         </div>
     </section>
 
@@ -301,10 +250,53 @@
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script>
+        // यहाँ से फॉर्म सबमिशन और n8n LIVE लिंक का फिक्स जुड़ गया है
+        document.getElementById('my-lead-form').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const btn = document.getElementById('submit-btn');
+            const originalText = btn.innerText;
+            btn.innerText = 'PROCESSING...';
+            btn.disabled = true;
+
+            const formData = new FormData(this);
+            const data = {
+                name: formData.get('name'),
+                email: formData.get('email'),
+                industry: formData.get('industry'),
+                target_location: formData.get('target_location')
+            };
+
+            try {
+                // यहाँ आपका 100% LIVE प्रोडक्शन लिंक लगा दिया है भाई
+                const response = await fetch('https://n8n.thekbglobal.com/webhook/kb-global-website-leads', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(data)
+                });
+
+                if (response.ok) {
+                    btn.innerText = 'SUCCESS! THANK YOU';
+                    btn.style.backgroundColor = '#10b981';
+                    this.reset();
+                } else {
+                    btn.innerText = 'ERROR! TRY AGAIN';
+                    btn.style.backgroundColor = '#ef4444';
+                    btn.disabled = false;
+                }
+            } catch (error) {
+                btn.innerText = 'ERROR! TRY AGAIN';
+                btn.style.backgroundColor = '#ef4444';
+                btn.disabled = false;
+            }
+        });
+
+        // ग्लोब का थ्री.जेएस कोड वैसा ही है
         const container = document.getElementById('globe-fixed-bg');
         const scene = new THREE.Scene();
         
-        // कैमरा को थोड़ा पीछे किया ताकि ग्लोब बड़ा और आकर्षक दिखे
         const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
         camera.position.z = 3.2;
 
@@ -313,11 +305,10 @@
         renderer.setPixelRatio(window.devicePixelRatio);
         container.appendChild(renderer.domElement);
 
-        // ग्लोब का मुख्य आकार बड़ा किया (1.6 से बढ़ाकर 2.2 किया ताकि एलिमेंटॉर जैसा बड़ा लुक आए)
         const globeRadius = 2.2;
         const geometry = new THREE.SphereGeometry(globeRadius, 40, 40);
         const material = new THREE.MeshBasicMaterial({
-            color: 0x022c22, // डार्क नियॉन ग्रीन बेस
+            color: 0x022c22, 
             wireframe: true,
             transparent: true,
             opacity: 0.15
@@ -325,9 +316,8 @@
         const globe = new THREE.Mesh(geometry, material);
         scene.add(globe);
 
-        // आपके वीडियो जैसा सघन (High-Density) नियॉन नेटवर्क डॉट्स
         const pointsGeometry = new THREE.BufferGeometry();
-        const pointsCount = 600; // डॉट्स की संख्या बढ़ाई
+        const pointsCount = 600; 
         const positions = new Float32Array(pointsCount * 3);
 
         for(let i=0; i<pointsCount*3; i+=3) {
@@ -344,7 +334,7 @@
         pointsGeometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
         
         const pointsMaterial = new THREE.PointsMaterial({
-            color: 0x10b981, // चमकदार नियॉन ग्रीन
+            color: 0x10b981, 
             size: 0.05,
             transparent: true,
             opacity: 0.95
@@ -352,9 +342,8 @@
         const networkPoints = new THREE.Points(pointsGeometry, pointsMaterial);
         globe.add(networkPoints);
 
-        // देशों को जोड़ने वाले शानदार इलेक्ट्रिक ब्लू कर्व्स (Arcs)
         const lineMaterial = new THREE.LineBasicMaterial({
-            color: 0x38bdf8, // ब्राइट इलेक्ट्रिक ब्लू
+            color: 0x38bdf8, 
             transparent: true,
             opacity: 0.7
         });
@@ -369,7 +358,6 @@
             
             for (let j = 0; j <= 15; j++) {
                 const p = new THREE.Vector3().lerpVectors(p1, p2, j / 15);
-                // आर्क को सतह से ऊपर उठाने के लिए इफ़ेक्ट
                 p.normalize().multiplyScalar(globeRadius + Math.sin((j / 15) * Math.PI) * 0.25);
                 points.push(p);
             }
@@ -379,7 +367,6 @@
             globe.add(line);
         }
 
-        // स्मूथ और निरंतर रोटेशन एनिमेशन
         function animate() {
             requestAnimationFrame(animate);
             globe.rotation.y += 0.0025;
@@ -388,51 +375,11 @@
         }
         animate();
 
-        // स्क्रीन साइज बदलने पर रिस्पॉन्सिव रहने के लिए फिक्स
         window.addEventListener('resize', () => {
             camera.aspect = window.innerWidth / window.innerHeight;
             camera.updateProjectionMatrix();
             renderer.setSize(window.innerWidth, window.innerHeight);
         });
     </script>
-    <script>
-                document.getElementById('kb-lead-form').addEventListener('submit', function(e) {
-                    e.preventDefault();
-                    
-                    const btn = document.getElementById('submit-btn');
-                    btn.innerText = 'SENDING...';
-                    btn.disabled = true;
-
-                    const formData = {
-                        name: document.getElementById('form-name').value,
-                        email: document.getElementById('form-email').value,
-                        industry: document.getElementById('form-industry').value,
-                        target_location: document.getElementById('form-location').value
-                    };
-
-                    fetch('यहाँ_नया_लिंक_पेस्ट_करें', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify(formData)
-                    })
-                    .then(response => {
-                        if(response.ok) {
-                            btn.innerText = 'SUCCESS! CHECK INBOX';
-                            btn.style.backgroundColor = '#22c55e';
-                            document.getElementById('kb-lead-form').reset();
-                        } else {
-                            btn.innerText = 'ERROR! TRY AGAIN';
-                            btn.style.backgroundColor = '#ef4444';
-                            btn.disabled = false;
-                        }
-                    })
-                    .catch(error => {
-                        console.error('Error:', error);
-                        btn.innerText = 'ERROR! TRY AGAIN';
-                        btn.style.backgroundColor = '#ef4444';
-                        btn.disabled = false;
-                    });
-                });
-            </script>
 </body>
 </html>
