@@ -29,6 +29,9 @@
             position: relative;
             z-index: 10;
         }
+        html {
+            scroll-behavior: smooth;
+        }
     </style>
 </head>
 <body class="bg-slate-950 text-slate-100 font-sans antialiased overflow-x-hidden">
@@ -51,7 +54,7 @@
                 Flood Your Pipelines with 100% Verified Home-Owner & Corporate Data across the US, UK, Canada, Europe, UAE, and Japan.
             </p>
             
-            <a href="#lead-form" class="inline-block bg-emerald-500 text-white font-extrabold text-xl px-10 py-5 rounded-lg transition-all neon-glow transform hover:scale-105 duration-200">
+            <a href="#lead-form" class="inline-block bg-emerald-500 text-slate-900 font-extrabold text-xl px-10 py-5 rounded-lg transition-all neon-glow transform hover:scale-105 duration-200">
                 GET 10 FREE SAMPLE LEADS
             </a>
         </div>
@@ -203,7 +206,7 @@
         </div>
     </section>
 
-    <section id="lead-form" class="py-24 bg-slate-950 relative overflow-hidden relative z-10">
+    <section id="lead-form" class="py-24 bg-slate-950 relative overflow-hidden z-10">
         <div class="absolute bottom-0 left-1/2 -translate-x-1/2 w-[800px] h-[500px] bg-emerald-500/10 rounded-full blur-[120px] pointer-events-none"></div>
         <div class="max-w-xl mx-auto px-6 relative z-10">
             <div class="text-center mb-10">
@@ -255,16 +258,17 @@
             e.preventDefault();
             
             const btn = document.getElementById('submit-btn');
-            const originalText = btn.innerText;
             btn.innerText = 'PROCESSING...';
             btn.disabled = true;
 
             const formData = new FormData(this);
             const data = {
-                name: formData.get('name'),
-                email: formData.get('email'),
-                industry: formData.get('industry'),
-                target_location: formData.get('target_location')
+                body: {
+                    name: formData.get('name'),
+                    email: formData.get('email'),
+                    industry: formData.get('industry'),
+                    target_location: formData.get('target_location')
+                }
             };
 
             try {
@@ -367,13 +371,13 @@
             globe.add(line);
         }
 
-        function animate() {
-            requestAnimationFrame(animate);
+        fn_animate();
+        function fn_animate() {
+            requestAnimationFrame(fn_animate);
             globe.rotation.y += 0.0025;
             globe.rotation.x += 0.0003;
             renderer.render(scene, camera);
         }
-        animate();
 
         window.addEventListener('resize', () => {
             camera.aspect = window.innerWidth / window.innerHeight;
